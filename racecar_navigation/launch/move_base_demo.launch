@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="use_rviz" default="$(optenv RACECAR_CLIENT false)" />
+  <arg name="is_stage" default="false" />
+  <arg name="is_teb" default="false" />
+
+  <group unless="$(arg is_stage)">
+    <!-- Run the map server -->
+    <arg name="map_file" default="$(find racecar_navigation)/maps/test.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+    <!-- Run Odometry -->
+    <include file="$(find racecar_navigation)/launch/odom.launch" />
+
+    <!--- Run Speed Controller -->
+    <include file="$(find racecar_control)/launch/speed_controller.launch" />
+  </group>
+  <!-- Run AMCL -->
+  <node name="fake_localization" pkg="fake_localization" type="fake_localization" respawn="false" if="$(arg is_stage)" />
+
+  <include file="$(find racecar_navigation)/launch/amcl.launch" unless="$(arg is_stage)" />
+
+  <!--- Run Move Base -->
+  <include file="$(find racecar_navigation)/launch/move_base.launch" unless="$(arg is_teb)" />
+  <include file="$(find racecar_navigation)/launch/teb.launch" if="$(arg is_teb)" />
+
+  <!-- Rviz -->
+  <include file="$(find racecar_core)/launch/rviz.launch" if="$(arg use_rviz)">
+    <arg name="config" value="move_base" unless="$(arg is_teb)"/>
+    <arg name="config" value="teb" if="$(arg is_teb)"/>
+  </include>
+</launch>

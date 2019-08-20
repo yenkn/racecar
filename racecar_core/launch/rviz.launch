@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="config" default="amcl" />
+
+    <!-- Rviz -->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find racecar_core)/rviz/$(arg config).rviz"/>
+
+</launch>

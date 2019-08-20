@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="racecar_core" type="racecar_chassis" name="racecar_chassis" output="screen">
+        <param name="commandRate" value="100" />
+        <param name="speedPublishRate" value="100" />
+        <param name="commandMaxAge" value="0.2" />
+
+        <rosparam ns="racecarProperties" command="load" file="$(find racecar_core)/config/racecar_properties.yaml" />
+        <rosparam param="chassisCommandPriorities" command="load" file="$(find racecar_core)/config/chassis_command_priorities.yaml" />
+
+        <param name="port" value="/dev/car" />
+        <param name="serialBaud" value="38400" />
+        <param name="serialDataBits" value="8" />
+        <param name="serialParity" value="none" />
+        <param name="serialStopBits" value="1" />
+        <param name="serialHardwareFlow" value="false" />
+        <param name="serialSoftwareFlow" value="false" />
+
+        <param name="steerMiddle" value="1400.0" />
+
+        <param name="encoderFactor" value="-0.004316939315"/> <!--2.95/100*M_PI/(512*0.005) -->
+    </node>
+</launch>

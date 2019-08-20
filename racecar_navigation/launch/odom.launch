@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="is_rplidar" default="$(optenv RACECAR_CLIENT false)" />
+
+  <!--rf2o_Laser_Odometry-->
+  <node pkg="rf2o_laser_odometry" type="rf2o_laser_odometry_node" name="rf2o_laser_odometry">
+    <param name="laser_scan_topic" value="scan"/>       <!-- topic where the lidar scans are being published -->
+    <param name="base_frame_id" value="base_link"/>     <!-- frame_id (tf) of the mobile robot base. A tf transform from the laser_frame to the base_frame is mandatory -->
+    <param name="odom_topic" value="odom_rf2o" />       <!-- topic where tu publish the odometry estimations -->
+    <param name="publish_tf" value="true" />            <!-- wheter or not to publish the tf::transform (base->odom) -->
+    <param name="odom_frame_id" value="odom" />         <!-- frame_id (tf) to publish the odometry estimations -->
+    <param name="freq" value="20.0"/>
+    <param name="is_rplidar" value="$(arg is_rplidar)" />
+    <param name="verbose" value="true" />               <!-- Execution frequency. See "Planar Odometry from a Radial Laser Scanner. A Range Flow-based Approach. ICRA'16"-->
+  </node>
+
+  <!-- Robot_Localization -->
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+    <rosparam command="load" file="$(find racecar_navigation)/config/ekf_params.yaml" />
+  </node>
+</launch>

@@ -1,0 +1,10 @@
+uint32 id
+uint32 survive
+geometry_msgs/Point relativeMean
+geometry_msgs/Point mean
+geometry_msgs/Point[] points
+int32 stage
+float64 forward
+float64 backward
+float64 leftward
+float64 rightward

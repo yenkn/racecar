@@ -1,0 +1,4 @@
+# smaller number got higher priority
+
+teleop: 1
+controller: 2

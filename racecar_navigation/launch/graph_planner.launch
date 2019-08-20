@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="racecar_navigation" type="graph_planner" respawn="false" name="graph_planner" output="screen">
+        <rosparam file="$(find racecar_navigation)/config/graph_planner.yaml" command="load" />
+
+        <param name="spline_file" value="$(find racecar_navigation)/config/graph_path.txt" />
+    </node>
+</launch>

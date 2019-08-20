@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="racecar_core" type="guardian" name="racecar_guardian" output="screen">
+        <param name="stop_threshold" value="0.03"/>
+    </node>
+</launch>

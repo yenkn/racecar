@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="art_imu"
+        name="imu"
+        type="art_imu"
+        output="screen">
+    <param name="port" value="/dev/ttyUSB0"/>
+    <param name="frame_id" value="imu_link"/>
+
+    <param name="model" value="art_imu_02a"/>
+    <param name="baud" value="115200"/>
+
+  </node>
+
+  <include file="$(find art_imu)/launch/rviz.launch" />
+
+</launch>

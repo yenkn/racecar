@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="use_rviz" default="$(optenv RACECAR_CLIENT false)" />
+    <arg name="is_stage" default="false" />
+
+    <group unless="$(arg is_stage)">
+        <!-- Run the map server -->
+        <arg name="map_file" default="$(find racecar_navigation)/maps/test.yaml"/>
+        <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+        <include file="$(find racecar_control)/launch/speed_controller.launch" />
+    </group>
+
+    <!-- Run Odometry -->
+    <include file="$(find racecar_navigation)/launch/odom.launch"/>
+    <include file="$(find racecar_navigation)/launch/amcl.launch">
+        <arg name="is_stage" value="$(arg is_stage)" />
+    </include>
+
+    <include file="$(find racecar_navigation)/launch/graph_localization.launch"/>
+    <include file="$(find racecar_navigation)/launch/obstacle_detector.launch"/>
+    <include file="$(find racecar_navigation)/launch/graph_planner.launch"/>
+    <include file="$(find racecar_navigation)/launch/scan_planner.launch"/>
+    <node pkg="racecar_control" type="stage_reconfigure.py" name="stage_reconfigure" output="screen" />
+
+<!--    <include file="$(find racecar_navigation)/launch/navigator.launch" />-->
+
+    <include file="$(find racecar_control)/launch/pd_controller.launch">
+        <arg name="move_base" value="false"/>
+    </include>
+
+    <!-- Rviz -->
+    <include file="$(find racecar_core)/launch/rviz.launch" if="$(arg use_rviz)">
+        <arg name="config" value="amcl"/>
+    </include>
+</launch>

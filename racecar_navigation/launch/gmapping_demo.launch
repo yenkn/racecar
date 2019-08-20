@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="use_rviz" default="$(optenv RACECAR_CLIENT false)" />
+    <arg name="is_stage" default="false" />
+
+    <!-- Run Odometry -->
+    <include file="$(find racecar_navigation)/launch/odom.launch" unless="$(arg is_stage)" />
+
+    <include file="$(find racecar_navigation)/launch/gmapping.launch" />
+
+    <!-- Rviz -->
+    <include file="$(find racecar_core)/launch/rviz.launch" if="$(arg use_rviz)">
+        <arg name="config" value="gmapping" />
+    </include>
+
+</launch>

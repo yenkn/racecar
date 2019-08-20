@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="racecar_navigation" type="graph_detector" respawn="false" name="graph_detector" output="screen">
+        <rosparam file="$(find racecar_navigation)/config/graph_detector.yaml" command="load" />
+    </node>
+
+</launch>

@@ -1,0 +1,16 @@
+erode_size: 0
+lsd_scale: 0.8
+filter_size: 10
+orientation_diff: 10.0 # for line merger
+
+# feature matcher
+correct_stage: []
+max_feature_distance: 2.0
+feature_diff_tolerance: 10.0
+correct_threshold: 0.5
+backward_bound: 0.6
+
+publish_plan_map: true
+uturn_radius: 0.5
+first_point: false
+checkline_x_tolerance: 15

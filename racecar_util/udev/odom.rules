@@ -1,0 +1,4 @@
+# set the udev rule , make the device_port be fixed by arduino
+#
+# KERNEL=="ttyUSB*", KERNELS=="1-4:1.0", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", NAME="ttyUSB1", MODE:="666", SYMLINK+="odom"
+KERNEL=="ttyUSB*", KERNELS=="1-6:1.0", MODE:="666", NAME="ttyUSB1", SYMLINK+="odom"

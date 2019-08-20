@@ -1,0 +1,10 @@
+cluster_tolerance: 0.2 # minimal distance to create a cluster
+obstacle_movement_tolerance: 1.0 # if obstacle moved this far means it it gone
+minimal_survival: 2 # minimal survival counter to confirm a obstacle
+maximal_reserve: 10 # maximal reserve counter to confirm obstacle disappear
+minimal_points: 2 # minimal points to confirm a cluster
+line_segment_distance: 0.3
+
+include_radius: 0.2
+exclude_radius: 0.8
+distance_filter: 4.0

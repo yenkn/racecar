@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="move_base" default="false"/>
+
+    <node name="pure_pursuit" pkg="racecar_control" type="pure_pursuit" output="screen">
+        <rosparam file="$(find racecar_control)/config/pure_pursuit_params.yaml" command="load" />
+
+        <remap from="/pure_pursuit/odom" to="/odometry/filtered" />
+        <remap from="/pure_pursuit/global_plan" to="/navigator/plan" unless="$(arg move_base)" />
+        <remap from="/pure_pursuit/global_plan" to="/move_base/global_plan" if="$(arg move_base)" />
+        <remap from="/pure_pursuit/goal" to="/move_base_simple/goal" />
+        <remap from="/pure_pursuit/pose" to="/amcl_pose" />
+        <remap from="/pure_pursuit/cmd_vel" to="/cmd_vel" />
+    </node>
+</launch>

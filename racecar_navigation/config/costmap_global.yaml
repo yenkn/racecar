@@ -1,0 +1,16 @@
+global_frame: map
+update_frequency: 10.0
+publish_frequency: 2.0
+static_map: true
+rolling_window: false
+track_unknown_space: false
+always_send_full_costmap: false
+
+plugins:
+  - {name: static,                  type: "costmap_2d::StaticLayer"}
+  - {name: obstacle_laser,          type: "costmap_2d::ObstacleLayer"}
+  - {name: inflation,               type: "costmap_2d::InflationLayer"}
+
+obstacle_laser:
+    observation_sources: laser
+    laser: {data_type: LaserScan, clearing: true, marking: true, topic: /scan, inf_is_valid: true}

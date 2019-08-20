@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="racecar_navigation" type="scan_planner" respawn="false" name="scan_planner" output="screen">
+
+        <param name="planner_type" value="global" />
+        <param name="goal_distance" value="4.0" />
+        <param name="replan_step" value="100" />
+        <rosparam file="$(find racecar_navigation)/config/planner.yaml" command="load" subst_value="true" />
+        <param name="path_planner/allow_unknown" value="true" />
+        <param name="path_planner/use_grid_path" value="false" />
+        <param name="sbpl_planner/primitive_filename" value="$(find racecar_navigation)/config/car_.mprim.txt" />
+
+        <rosparam file="$(find racecar_navigation)/config/costmap_common.yaml" command="load" ns="local_costmap" />
+
+        <!-- static global costmap, static map provides size -->
+        <rosparam file="$(find racecar_navigation)/config/costmap_local.yaml" command="load" ns="local_costmap" />
+    </node>
+
+</launch>

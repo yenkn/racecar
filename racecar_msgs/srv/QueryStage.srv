@@ -1,0 +1,9 @@
+geometry_msgs/Point point
+int32 knownStage
+---
+int32 stage
+int32 currentStage
+float64 forward
+float64 backward
+float64 leftward
+float64 rightward

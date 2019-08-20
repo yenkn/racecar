@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Launch description file to publish TF -->
+    <include file="$(find racecar_description)/launch/racecar.launch" />
+
+    <!-- Lidar -->
+    <include file="$(find ls01g)/launch/ls01g.launch">
+        <arg name="inverted" value="true"/>
+    </include>
+
+    <!-- IMU -->
+    <include file="$(find art_imu)/launch/imu.launch" />
+
+    <!-- Chassis Core -->
+    <include file="$(find racecar_core)/launch/chassis.launch" />
+
+    <include file="$(find racecar_core)/launch/guardian.launch" />
+
+    <node pkg="racecar_core" name="laser_calibration" type="laser_calibration" output="screen" />
+
+</launch>

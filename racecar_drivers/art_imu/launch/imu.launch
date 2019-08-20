@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="frame_id" default="imu_link" />
+
+  <node pkg="art_imu"
+        name="imu"
+        type="art_imu"
+        output="screen">
+    <param name="port" value="/dev/imu"/>
+    
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="model" value="art_imu_02a"/>
+    <param name="baud" value="115200"/>
+
+  </node>
+
+</launch>

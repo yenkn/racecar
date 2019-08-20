@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="racecar_navigation" type="graph_localization" respawn="false" name="graph_localization" output="screen">
+        <rosparam file="$(find racecar_navigation)/config/graph_localization.yaml" command="load" />
+    </node>
+</launch>

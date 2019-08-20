@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="move_base" default="true"/>
+    <node name="mpc_node" pkg="racecar_control" type="mpc_controller" output="screen">
+        <rosparam file="$(find racecar_control)/config/mpc_params.yaml" command="load" />
+
+        <param name="global_path_topic" value="/move_base/global_plan" if="$(arg move_base)" />
+        <param name="global_path_topic" value="/graph_planner/plan" unless="$(arg move_base)" />
+    </node>
+</launch>

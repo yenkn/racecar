@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="racecar_navigation" type="navigator_node" respawn="false" name="navigator" output="screen">
+
+        <param name="planner_type" value="sbpl" />
+        <rosparam file="$(find racecar_navigation)/config/planner.yaml" command="load" subst_value="true" />
+
+        <rosparam file="$(find racecar_navigation)/config/obstacle_detector.yaml" command="load" ns="obstacle_detector" />
+
+        <!-- observation sources located in costmap_common.yaml -->
+        <rosparam file="$(find racecar_navigation)/config/costmap_common.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find racecar_navigation)/config/costmap_common.yaml" command="load" ns="local_costmap" />
+
+        <!-- static global costmap, static map provides size -->
+        <rosparam file="$(find racecar_navigation)/config/costmap_global.yaml" command="load" ns="global_costmap" />
+    </node>
+
+</launch>

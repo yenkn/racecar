@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="is_gazebo" default="$(optenv RACECAR_CLIENT false)"/>
+
+  <node pkg="racecar_control" type="cmd_vel_translator.py" name="cmd_vel_translator" if="$(arg is_gazebo)" output="screen">
+    <rosparam file="$(find racecar_core)/config/racecar_properties.yaml" command="load" ns="racacar_properties" />
+  </node>
+
+  <node pkg="racecar_control" type="speed_controller" name="speed_controller_node" unless="$(arg is_gazebo)" output="screen">
+    <rosparam file="$(find racecar_core)/config/racecar_properties.yaml" ns="racecar_properties" command="load"/>
+    <rosparam file="$(find racecar_core)/config/throttle_mapping.yaml" param="throttle_mapping" command="load"/>
+    <rosparam file="$(find racecar_core)/config/steer_mapping.yaml" param="steer_mapping" command="load"/>
+
+    <param name="throttle_max" value="0.2"/>
+    <param name="control_rate" value="100"/>
+    <param name="display_rate" value="1"/>
+    <param name="KInterp" value="1"/>
+    <param name="KP" value="0.2"/>
+    <param name="KI" value="0.003"/>
+    <param name="KILimit" value="20.0" />
+    <param name="AdjustPercent" value="0.3" />
+    <param name="KD" value="0.0"/>
+
+    <rosparam param="filter">[0.5, 0.3, 0.15, 0.05]</rosparam>
+    <param name="filter_interval" value="25" /> <!-- 100Hz 1s -->
+
+    <param name="max_step" value="0.4" />
+    <param name="step_value" value="0.4" />
+    <param name="step_interval" value="5" />
+
+    <param name="openLoop" value="false" />
+  </node>
+</launch>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="racecar_navigation" type="obstacle_detector" respawn="false" name="obstacle_detector" output="screen">
+        <rosparam file="$(find racecar_navigation)/config/obstacle_detector.yaml" command="load" />
+    </node>
+
+</launch>

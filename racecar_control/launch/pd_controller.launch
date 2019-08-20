@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="move_base" default="true" />
+
+    <node name="pd_controller" pkg="racecar_control" type="pd_controller" output="screen">
+        <remap from="/pd_controller/odom" to="/odometry/filtered" />
+        <remap from="/pd_controller/global_plan" to="/scan_planner/plan" unless="$(arg move_base)" />
+        <remap from="/pd_controller/global_plan" to="/move_base/global_plan" if="$(arg move_base)" />
+        <remap from="/pd_controller/goal" to="/move_base_simple/goal" />
+        <remap from="/pd_controller/pose" to="/amcl_pose" />
+        <remap from="/pd_controller/cmd_vel" to="/cmd_vel" />
+
+        <param name="controller_freq" value="100" />
+        <param name="pid_p" value="1.0"/>
+        <param name="pid_i" value="0.0"/>
+        <param name="pid_d" value="0.0"/>
+        <param name="smooth_accel" value="false" />
+
+        <param name="goal_radius" value="1.0" />
+
+        <param name="set_speed" value="2.4" />
+        <param name="error_distance" value="1.4" />
+        <param name="error_limit" value="-1" />
+    </node>
+</launch>

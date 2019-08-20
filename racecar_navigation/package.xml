@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>racecar_navigation</name>
+  <version>0.0.0</version>
+  <description>The racecar_navigation package</description>
+
+  <!-- One maintainer tag required, multiple allowed, one person per tag -->
+  <!-- Example:  -->
+  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
+  <maintainer email="i@yenkn.com">yenkn</maintainer>
+
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>racecar_msgs</depend>
+  <depend>rospy</depend>
+  <depend>tf</depend>
+  <depend>racecar_core</depend>
+  <depend>costmap_2d</depend>
+  <depend>interactive_markers</depend>
+
+  <build_depend>roslaunch</build_depend>
+  <exec_depend>amcl</exec_depend>
+  <exec_depend>frontier_exploration</exec_depend>
+  <exec_depend>gmapping</exec_depend>
+  <exec_depend>map_server</exec_depend>
+  <exec_depend>move_base</exec_depend>
+  <exec_depend>navfn</exec_depend>
+  <exec_depend>base_local_planner</exec_depend>
+  <exec_depend>dwa_local_planner</exec_depend>
+  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>laser_scan_matcher</exec_depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
