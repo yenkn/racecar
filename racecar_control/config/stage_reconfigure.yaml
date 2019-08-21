@@ -1,9 +1,9 @@
 config:
-  max_speed: &max_speed 2.4
-  stable_speed: &stable_speed 2.4
-  low_speed: &low_speed 2.4
+  max_speed: &max_speed 2.5
+  stable_speed: &stable_speed 2.5
+  low_speed: &low_speed 2.5
 
-  hard_cross: &hard_cross 2.4
+  hard_cross: &hard_cross 2.5
 
 pd_controller:
   stages:
