@@ -9,11 +9,12 @@
 #include <tf/transform_datatypes.h>
 #include <tf/tf.h>
 #include <racecar_core/utils/tf.h>
-#include <std_msgs/Float32.h>
+#include <std_msgs/Float64.h>
 #include <sensor_msgs/LaserScan.h>
 #include <racecar_core/point.h>
 #include <racecar_msgs/ObstacleEvent.h>
 #include <racecar_msgs/Stage.h>
+#include <racecar_msgs/GetPathSimilarity.h>
 
 #include "path_planner/base_path_planner.h"
 #include "path_planner/planner_core.h"
@@ -27,8 +28,9 @@ public:
 private:
   tf::TransformListener tf_;
   ros::NodeHandle privateNode_, node_;
-  ros::Publisher markerPub_, startPub_, goalPub_, pathPub_;
+  ros::Publisher markerPub_, startPub_, goalPub_, pathPub_, similarityPub_;
   ros::Subscriber scanSub_, pathSub_, goalSub_, obstacleEventSub_, stageSub_;
+  ros::ServiceClient similarityClient_;
   costmap_2d::Costmap2DROS localCostmap_;
   Point2D goal_;
   geometry_msgs::PoseStamped globalGoal_;
@@ -38,15 +40,20 @@ private:
   std::vector<Point2D> path_;
   int carIndex_ = 0;
   double goalDistance_;
-  int replanStep_;
+  int maxKeep_;
+  double minSimilarity_;
+  double switchDistance_;
   bool goalRecived_ = false;
 
+  std::set<int> globalStages_;
+
+  int keepCounter_ = 0;
 
   int pathLocker = 0;
   double switchTime_ = 0.2; // given time to replan
   double lastSwitchTime_ = 0.0;
 
-  std::vector<Point2D> previousPath_;
+  nav_msgs::Path previousPath_;
   double pathLockLength_ = 1.5;
 
   std::string plannerType_;
@@ -55,6 +62,7 @@ private:
 
   void replan();
   bool isOccupied(const Point2D &pt, bool &occupied);
+  double pathSimilarity(const nav_msgs::Path &path1, const nav_msgs::Path &path2);
 
   void stageCallback(const racecar_msgs::StageConstPtr &msg);
   void obstacleCallback(const racecar_msgs::ObstacleEventConstPtr &msg);
@@ -72,7 +80,13 @@ ScanPlanner::ScanPlanner() :
 
   privateNode_.param<std::string>("planner_type", plannerType_, "global");
   privateNode_.param("goal_distance", goalDistance_, 3.0);
-  privateNode_.param("replan_step", replanStep_, 50);
+  privateNode_.param("max_keep", maxKeep_, 5);
+  privateNode_.param("min_similarity", minSimilarity_, 0.8);
+  privateNode_.param("switch_distance", switchDistance_, 1.0);
+
+  std::vector<int> stages;
+  privateNode_.param("global_stages", stages, {});
+  globalStages_ = std::set<int>(stages.begin(), stages.end());
 
   if(plannerType_ == "global") {
     planner_ = new path_planner::PathPlanner("path_planner", localCostmap_.getCostmap(), localCostmap_.getGlobalFrameID());
@@ -86,12 +100,12 @@ ScanPlanner::ScanPlanner() :
   goalSub_ = node_.subscribe("/move_base_simple/goal", 1, &ScanPlanner::goalCallback, this);
   obstacleEventSub_ = node_.subscribe("/graph_detector/event", 100, &ScanPlanner::obstacleCallback, this);
   stageSub_ = node_.subscribe("/stage", 1, &ScanPlanner::stageCallback, this);
+  similarityClient_ = node_.serviceClient<racecar_msgs::GetPathSimilarity>("compare_path");
 
   pathPub_ = privateNode_.advertise<nav_msgs::Path>("plan", 1);
   startPub_ = privateNode_.advertise<geometry_msgs::PointStamped>("start", 1);
   goalPub_ = privateNode_.advertise<geometry_msgs::PointStamped>("goal", 1);
-
-
+  similarityPub_ = privateNode_.advertise<std_msgs::Float64>("similarity", 1);
 }
 
 ScanPlanner::~ScanPlanner() {
@@ -135,6 +149,18 @@ bool ScanPlanner::isOccupied(const Point2D &pt, bool &occupied) {
   return true;
 }
 
+double ScanPlanner::pathSimilarity(const nav_msgs::Path &path1, const nav_msgs::Path &path2) {
+  racecar_msgs::GetPathSimilarityRequest req;
+  racecar_msgs::GetPathSimilarityResponse res;
+
+  req.path1 = path1;
+  req.path2 = path2;
+  if(similarityClient_.call(req, res)) {
+    return res.similarity;
+  }
+  return -1.0;
+}
+
 void ScanPlanner::scanCallback(const sensor_msgs::LaserScanConstPtr &msg) {
   if(!goalRecived_ || pathLocker != 0) return;
 
@@ -169,38 +195,16 @@ void ScanPlanner::replan() {
     return;
   }
 
-
-  double minDistance = FLT_MAX;
-  bool foundGoal = false, outBound = false, occupied = false;
   if(!getRobotPose(carPose_)) {
     return;
   }
   Point2D carPoint(carPose_.pose.position.x, carPose_.pose.position.y);
-  Point2D planStart = carPoint;
-  auto prevPath = previousPath_;
+  nav_msgs::Path globalLocalPath;
 
-  if(prevPath.size() > replanStep_) {
-    int prevStartIndex = 0;
-    for (int i = 0; i < prevPath.size(); i++) {
-      double distance = prevPath[i].distance(carPoint);
-      if (distance < minDistance) {
-        minDistance = distance;
-        prevStartIndex = i;
-      }
-      // if (isOccupied(prevPath[i], occupied) && occupied) break;
-    }
-    prevPath.erase(prevPath.begin(), prevPath.begin() + prevStartIndex);
-
-    if(replanStep_ < prevPath.size()) {
-      planStart = prevPath[prevPath.size() - replanStep_];
-      prevPath.erase(prevPath.end() - replanStep_, prevPath.end()); // remove tail points
-    } else {
-      prevPath.clear();
-    }
-  }
-
-  minDistance = FLT_MAX;
+  double minDistance = FLT_MAX;
+  bool foundGoal = false, outBound = false, occupied = false;
   int startIndex = std::max(carIndex_ - 10, 0);
+
   for (int i = startIndex; i < path_.size(); i++) {
     auto distance = carPoint.distance(path_[i]);
     if(distance < minDistance) {
@@ -212,6 +216,7 @@ void ScanPlanner::replan() {
   double totalDistance = 0.0;
   for (int i = carIndex_+1; i < path_.size(); i++) {
     totalDistance += path_[i].distance(path_[i-1]);
+    globalLocalPath.poses.push_back(path_[i].toPoseStamped("map"));
 
     if(!isOccupied(path_[i],occupied)) {
       outBound = true;
@@ -231,70 +236,59 @@ void ScanPlanner::replan() {
 
   if(outBound) {
     ROS_WARN("out bound, keeping last plan");
+    keepCounter_++;
     return;
   }
-
-  geometry_msgs::PointStamped startPt, goal;
-  startPt.header.frame_id = goal.header.frame_id = "map";
-  startPt.header.stamp = goal.header.stamp = ros::Time::now();
-  goal.point = goal_.toPoint();
-  goalPub_.publish(goal);
-
-  startPt.point = planStart.toPoint();
-  startPub_.publish(startPt);
-
-
-  geometry_msgs::PoseStamped start, end;
-  start.header.frame_id = end.header.frame_id = "map";
-  start.header.stamp = end.header.stamp = ros::Time::now();
-  start.pose.position.x = planStart.x;
-  start.pose.position.y = planStart.y;
-  start.pose.orientation.w = 1.0;
-
-  end.pose.position = goal_.toPoint();
-  end.pose.orientation.w = 1.0;
-
-  nav_msgs::Path path;
-  if(!planner_->makePlan(start, end, path.poses)) {
-    ROS_ERROR("Failed to make plan");
-    return;
-  }
-
-  for(auto &pt: path.poses) {
-    prevPath.emplace_back(pt.pose.position.x, pt.pose.position.y);
-  }
-
-//  double yaw = tf::getYaw(carPose_.pose.orientation);
-//  double relateX = (path.poses[20].pose.position.x - carPose_.pose.position.x)*cos(yaw) + (path.poses[20].pose.position.y - carPose_.pose.position.y)*sin(yaw);
-//  if(path.poses.size() > 20 && relateX < 0) {
-//    if(replan) {
-//      ROS_ERROR("drop reverse path");
-//      return;
-//    } else {
-//      ROS_WARN("generating reverse path, replanning.");
-//      replan = true;
-//      goto plan;
-//    }
-//  }
 
   nav_msgs::Path final;
+  if(globalStages_.find(stage_.stage) != globalStages_.end() // current stage
+    && (globalStages_.find(stage_.stage+1) != globalStages_.end() || stage_.forward_distance > switchDistance_)) {
+    final.poses = globalLocalPath.poses;
+  } else {
+    geometry_msgs::PointStamped start, goal;
+    start.header.frame_id = goal.header.frame_id = "map";
+    start.header.stamp = goal.header.stamp = ros::Time::now();
+    goal.point = goal_.toPoint();
+    goalPub_.publish(goal);
+
+    start.point = carPoint.toPoint();
+    startPub_.publish(start);
+
+    geometry_msgs::PoseStamped startPose, endPose;
+    startPose.header.frame_id = endPose.header.frame_id = "map";
+    startPose.header.stamp = endPose.header.stamp = ros::Time::now();
+    startPose.pose.position = start.point;
+    startPose.pose.orientation.w = 1.0;
+
+    endPose.pose.position = goal.point;
+    endPose.pose.orientation.w = 1.0;
+
+    nav_msgs::Path path;
+    if (!planner_->makePlan(startPose, endPose, path.poses)) {
+      ROS_ERROR("Failed to make plan");
+      keepCounter_++;
+      return;
+    }
+    final.poses = path.poses;
+
+    double similarity = pathSimilarity(path, previousPath_);
+    std_msgs::Float64 simMsg;
+    simMsg.data = similarity;
+    similarityPub_.publish(simMsg);
+
+    if (similarity > 0 && similarity < minSimilarity_ && keepCounter_ < maxKeep_) {
+      ROS_WARN("path changed too much, dropping");
+      keepCounter_++;
+      return;
+    }
+  }
+
   final.header.stamp = ros::Time::now();
   final.header.frame_id = "map";
 
-  geometry_msgs::PoseStamped position;
-  position.header = final.header;
-  position.pose.orientation.w = 1.0;
-  for(int i = 0; i < prevPath.size(); i++) {
-    if(i < 20 || i >= prevPath.size()-20) {
-      position.pose.position = prevPath[i].toPoint();
-    } else {
-      position.pose.position = ((prevPath[i] + prevPath[i-20] + prevPath[i+20]) / 3).toPoint();
-    }
-    final.poses.push_back(position);
-  }
-
+  keepCounter_ = 0;
   pathPub_.publish(final);
-  previousPath_ = prevPath;
+  previousPath_ = final;
 }
 
 int main(int argc, char **argv) {

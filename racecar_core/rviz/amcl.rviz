@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /TF1/Frames1
+        - /Path1
         - /Imu1/Box properties1
         - /Obstacles1
         - /Obstacles1/MarkerArray1
@@ -66,12 +67,12 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: local_map
       Topic: /scan_planner/local_costmap/costmap
       Unreliable: false
       Use Timestamp: false
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: false
       Autocompute Value Bounds:
@@ -163,7 +164,7 @@ Visualization Manager:
       Update Interval: 0
       Value: true
     - Alpha: 1
-      Buffer Length: 1
+      Buffer Length: 10
       Class: rviz/Path
       Color: 0; 0; 255
       Enabled: true
@@ -343,7 +344,7 @@ Visualization Manager:
       Marker Topic: /pd_controller/path_marker
       Name: pursuit_circle
       Namespaces:
-        {}
+        Markers: true
       Queue Size: 100
       Value: true
     - Class: rviz/Group
@@ -357,7 +358,7 @@ Visualization Manager:
           Value: false
         - Class: rviz/MarkerArray
           Enabled: true
-          Marker Topic: /obstacle_detector/makers
+          Marker Topic: /graph_detector/makers
           Name: MarkerArray
           Namespaces:
             Markers: true
@@ -480,12 +481,12 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Map
       Topic: /scan_planner/path_planner/potential
       Unreliable: false
       Use Timestamp: false
-      Value: true
+      Value: false
     - Class: rviz/Group
       Displays:
         - Class: rviz/InteractiveMarkers
@@ -502,7 +503,7 @@ Visualization Manager:
           Marker Topic: /graph_localization/marker
           Name: Marker
           Namespaces:
-            {}
+            graph: true
           Queue Size: 100
           Value: true
       Enabled: true

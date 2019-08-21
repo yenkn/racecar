@@ -36,6 +36,7 @@ PDController::PDController(): steeringGain_(1.0) {
 
   pn.param("set_speed", setSpeed_, 1.0);
   pn.param("error_distance", errorDistance_, 1.0);
+  pn.param("derror_interval", dErrorInterval_, 1);
   pn.param("L", L_, 0.47); // length of car
   pn.param("lfw", lfw_, 0.1675); // distance between front the center of car
 
@@ -269,8 +270,14 @@ double PDController::calculateSteering(const tf::Vector3 &waypoint) {
   /*Estimate Steering Angle*/
   double eta = atan2(waypoint.y(), waypoint.x());
   double error = atan((L_ * sin(eta))/(practiceLfw_ / 2 + lfw_ * cos(eta)));
-  // double error = eta;
   double dError = error - previousError_;
+  // double error = eta;
+  if(dErrorBuffer_.size() == dErrorInterval_) {
+    dError = error - dErrorBuffer_.back();
+    dErrorBuffer_.pop_back();
+  }
+  dErrorBuffer_.push_front(error);
+
   if(errorLimit_ > 0.0) {
     dError = std::min(std::max(dError, -errorLimit_), errorLimit_); // limit
     error = previousError_ + dError;
@@ -279,7 +286,7 @@ double PDController::calculateSteering(const tf::Vector3 &waypoint) {
   previousError_ = error;
 
   std_msgs::Float32 msg;
-  msg.data = error;
+  msg.data = pidP_ * error;
   errorPub_.publish(msg);
   return steering;
 }

@@ -186,6 +186,7 @@ public:
       }
       groups[g].push_back(graphPoints[i]);
     }
+    std::sort(groups.back().begin(), groups.back().end(), yComparer);
 
     std::map<int, feature_t> featureMap = {};
     for(auto &f: features_) {

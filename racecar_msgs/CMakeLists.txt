@@ -4,6 +4,7 @@ project(racecar_msgs)
 find_package(catkin REQUIRED COMPONENTS
   genmsg
   std_msgs
+  nav_msgs
   sensor_msgs
   geometry_msgs
   diagnostic_msgs
@@ -26,11 +27,13 @@ add_service_files(
   FILES
   GetCheckline.srv
   QueryStage.srv
+  GetPathSimilarity.srv
 )
 
 generate_messages(DEPENDENCIES
   std_msgs
   sensor_msgs
+  nav_msgs
   geometry_msgs
   diagnostic_msgs
   )

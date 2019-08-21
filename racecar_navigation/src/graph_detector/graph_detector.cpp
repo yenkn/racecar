@@ -15,16 +15,16 @@ GraphDetector::GraphDetector(): privateNode_("~"), detector_("laser_line") {
   stageClient_ = privateNode_.serviceClient<racecar_msgs::QueryStage>("/query_stage");
 
   privateNode_.param("line_segment_distance", lineInSegmentDistance_, 0.1);
-  privateNode_.param("cluster_tolerance", clusterTolerance_, 0.20); // 0.1
+  privateNode_.param("cluster_tolerance", clusterTolerance_, 0.10); // 0.1
   privateNode_.param("obstacle_movement_tolerance", obstacleMovementTolerance_, 1.0);
-  privateNode_.param("minimal_survival", minimalSurvival_, 3);
+  privateNode_.param("minimal_survival", minimalSurvival_, 2);
   privateNode_.param("maximal_reserve", maximalReserve_, 5);
   privateNode_.param("detect_padding", detectPadding_, 0.2);
 
   privateNode_.param("include_radius", includeRadius_, 0.10); // 0.1
   privateNode_.param("exclude_radius", excludeRadius_, 0.40); // 0.5
   privateNode_.param("min_points", minPoints_, 2);
-  privateNode_.param("distance_filter", distanceFilter_, 3.5);
+  privateNode_.param("distance_filter", distanceFilter_, 6.0);
   privateNode_.param("transfer_distance", transferDistance_, 0.2);
 
   ROS_INFO("cluster_tolerance: %.4f", clusterTolerance_);
@@ -62,6 +62,20 @@ void GraphDetector::scanCallback(const sensor_msgs::LaserScanConstPtr &scan) {
   if(!points.empty()) {
     utils::KDTree<Point2D> tree(points);
     auto obstacles = clusterPoints(tree);
+    for(auto &ob: obstacles) {
+      // find closest line
+      Point2D leastPoint;
+      double minDistance = INFINITY;
+      for(auto &line : lines) {
+        Point2D outPoint;
+        double distance = utils::distaceToLineSegment(ob.relativeMean, Point2D(line.x1, line.y1), Point2D(line.x2, line.y2), &outPoint);
+        if(distance < minDistance) {
+          minDistance = distance;
+          leastPoint = outPoint;
+        }
+      }
+      ob.side = minDistance < 2.0 ? (leastPoint.y > ob.relativeMean.y ? 1 : -1) : 0;
+    }
     filterObstacles(obstacles);
     evolvePoints(obstacles);
     obstacles = getObstacles();
@@ -130,6 +144,7 @@ bool GraphDetector::evolvePoints(std::vector<cluster_t> &newObstacles) {
 
         if(!pair.second.stable && pair.second.surviveCounter == minimalSurvival_) {
           pair.second.stable = true;
+          pair.second.side = obstacle.side;
           pair.second.surviveCounter = 0;
 
           publishEvent(pair.second, EVENT_TYPE::ADD);
@@ -181,6 +196,7 @@ void GraphDetector::publishEvent(const cluster_t &cluster, EVENT_TYPE event) {
   msg.obstacle.backward = cluster.distances.backward;
   msg.obstacle.leftward = cluster.distances.leftward;
   msg.obstacle.rightward = cluster.distances.rightward;
+  msg.obstacle.side = cluster.side;
   msg.obstacle.id = cluster.id;
   msg.obstacle.survive = cluster.surviveCounter;
 

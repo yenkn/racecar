@@ -8,3 +8,4 @@ float64 forward
 float64 backward
 float64 leftward
 float64 rightward
+int32 side

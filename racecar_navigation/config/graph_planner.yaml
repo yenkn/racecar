@@ -1,8 +1,9 @@
 uturn_margin: 0.4
-sample_times: 100
-path_spacing: 0.05
+sample_times: 50
+path_spacing: 0.1
 default_goal: [0.0, -2.0]
 merge_radius: 0.8
 car_width: 0.5
-lock_side_distance: 0.5
-obstacle_stages: [0, 3, 6, 9, 12, 15, 18, 21]
+lock_side_distance: 3.5
+change_side_survive: 5
+obstacle_stages: []#[0, 3, 6, 9, 12, 15]

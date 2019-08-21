@@ -7,7 +7,6 @@ line_segment_distance: 0.1
 
 min_points: 2 # minimal points to confirm a cluster
 include_radius: 0.1
-exclude_radius: 0.6
-distance_filter: 4.0
+exclude_radius: 0.4
+distance_filter: 6.0
 transfer_distance: 0.2 # transfer obstacle to previous stage
-patch_size: 50

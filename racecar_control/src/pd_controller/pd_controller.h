@@ -43,6 +43,9 @@ private:
   double brakeGain_ = 1.0;
   tf::StampedTransform mapToCar_;
 
+  int dErrorInterval_;
+  std::deque<double> dErrorBuffer_;
+
   double L_, lfw_;
   double pidP_, pidI_, pidD_;
   double errorDistance_, setSpeed_, previousError_;

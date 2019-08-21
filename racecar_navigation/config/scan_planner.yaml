@@ -1,0 +1,6 @@
+planner_type: global
+goal_distance: 2.5
+min_similarity: 0.5
+max_keep: 8
+global_stages: []
+switch_distance: 2.0 # costmap to graph only

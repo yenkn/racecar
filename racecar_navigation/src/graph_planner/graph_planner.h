@@ -52,8 +52,10 @@ private:
 
   std::string splineFile_;
   double uTurnMargin_, pathSpacing_, mergeRadius_, carWidth_, lockSideDistance_;
-  int sampleTimes_;
+  int sampleTimes_, changeSideSurvive_;
   std::set<int> obstacleStages_;
+
+  std::map<int, std::vector<int>> obstacleSides_;
 
   void initializeSpline();
   void initializeMarkers();

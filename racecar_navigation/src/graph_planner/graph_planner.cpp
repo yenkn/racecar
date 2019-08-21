@@ -27,6 +27,7 @@ GraphPlanner::GraphPlanner(): nh_("~") {
   nh_.param("merge_radius", mergeRadius_, 1.0);
   nh_.param("car_width", carWidth_, 0.5);
   nh_.param("lock_side_distance", lockSideDistance_, 1.0);
+  nh_.param("change_side_survive", changeSideSurvive_, 5);
 
   std::vector<int> obstacleStages;
   nh_.param("obstacle_stages", obstacleStages, {});
@@ -81,17 +82,38 @@ void GraphPlanner::goalCallback(const geometry_msgs::PoseStampedConstPtr &msg) {
 }
 
 void GraphPlanner::pointCallback(const geometry_msgs::PointStampedConstPtr &msg) {
-//  auto pt = Point2D(msg->point.x, msg->point.y);
-//  for(int i = 1; i < checkPoints_.size(); i++) {
-//    auto start = checkPoints_[i-1];
-//    auto end = checkPoints_[i];
-//    Point2D leastPt;
-//    if(utils::distaceToLineSegment(pt, start, end, &leastPt) < 0.5 && leastPt != start && leastPt != end) {
-//      checkPoints_.insert(std::next(checkPoints_.begin(), i), pt);
-//    }
-//    refreshPath();
-//    flushSpline();
-//  }
+
+
+  auto pt = Point2D(msg->point.x, msg->point.y);
+  double minDistance = INFINITY;
+  int minIndex = -1;
+  for(int i = 1; i < checkPoints_.size(); i++) {
+    if(checkPoints_[i].distance(pt) < minDistance) {
+      minDistance = checkPoints_[i].distance(pt);
+      minIndex = i;
+    }
+  }
+
+  if(minDistance < 0.6) {
+    checkPoints_[minIndex].x = pt.x;
+    checkPoints_[minIndex].y = pt.y;
+
+    refreshPath();
+    flushSpline();
+  } else {
+      auto pt = Point2D(msg->point.x, msg->point.y);
+      for(int i = 1; i < checkPoints_.size(); i++) {
+        auto start = checkPoints_[i-1];
+        auto end = checkPoints_[i];
+        Point2D leastPt;
+        if(utils::distaceToLineSegment(pt, start, end, &leastPt) < 0.5 && leastPt != start && leastPt != end) {
+          checkPoints_.insert(std::next(checkPoints_.begin(), i), pt);
+        }
+        refreshPath();
+        flushSpline();
+      }
+  }
+
 }
 
 void GraphPlanner::obstacleCallback(const racecar_msgs::ObstacleEventConstPtr &msg) {
@@ -186,6 +208,7 @@ void GraphPlanner::createInteractiveMarker(int id, const Point2D &point)
   move_control.orientation.x = 0;
   move_control.orientation.y = 0.5f;
   move_control.orientation.z = 0;
+  move_control.always_visible = true;
   move_control.interaction_mode = visualization_msgs::InteractiveMarkerControl::MOVE_PLANE;
 
   // add the control to the interactive marker
@@ -325,13 +348,35 @@ int GraphPlanner::selectSide(int obstacleId) {
     // update obstacle
     if(hypot(ob.obstacle.relativeMean.x, ob.obstacle.relativeMean.y) > lockSideDistance_) {
       // can switch side
-      if ((side < 0 && ob.obstacle.leftward < carWidth_) || (side > 0 && ob.obstacle.rightward < carWidth_)) {
-        side *= -1;
-        ROS_INFO("obstacle[%d] switch to %d", obstacleId, side);
-      }
+//      if ((side < 0 && ob.obstacle.leftward < carWidth_) || (side > 0 && ob.obstacle.rightward < carWidth_)) {
+//        side *= -1;
+//        ROS_INFO("obstacle[%d] switch to %d", obstacleId, side);
+//      } else
+//      if(ob.obstacle.survive < changeSideSurvive_) {
+//        int selectSide = ob.obstacle.leftward > ob.obstacle.rightward ? -1 : 1;
+//        obstacleSides_[obstacleId].push_back(selectSide);
+//      } else if(ob.obstacle.survive == changeSideSurvive_ && ob.obstacle.stage != uturnIndex_ - 1 && ob.obstacle.stage != 0) {
+//        int leftSide = 0, rightSide = 0;
+//        for(auto s : obstacleSides_[obstacleId]) {
+//          if(s < 0) leftSide++;
+//          else rightSide++;
+//        }
+//        side = leftSide > rightSide ? -1 : 1;
+//      }
+//      if(ob.obstacle.stage == uturnIndex_ - 1 && (ob.obstacle.leftward - ob.obstacle.rightward) < 0.5) {
+//      } else {
+//        side = ob.obstacle.leftward > ob.obstacle.rightward ? -1 : 1;
+//      }
     }
   } else {
+//    if(ob.obstacle.stage == uturnIndex_ - 1 && (ob.obstacle.leftward - ob.obstacle.rightward) < 0.5) {
+//      side = -1;
+//    } else {
+//      side = ob.obstacle.leftward > ob.obstacle.rightward ? -1 : 1;
+//      // side = ob.obstacle.relativeMean.y < 0 ? -1 : 1;
+//    }
     side = ob.obstacle.leftward > ob.obstacle.rightward ? -1 : 1;
+    obstacleSides_[obstacleId] = { side };
   }
 
   Point2D pos = Point2D(ob.obstacle.mean.x, ob.obstacle.mean.y), projection;

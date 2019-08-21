@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <node pkg="racecar_navigation" type="matching_detector" respawn="false" name="matching_detector" output="screen">
-        <rosparam file="$(find racecar_navigation)/config/matching_detector.yaml" command="load" />
-    </node>
-
-</launch>

@@ -1,0 +1,4 @@
+nav_msgs/Path path1
+nav_msgs/Path path2
+---
+float64 similarity

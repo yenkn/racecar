@@ -18,7 +18,7 @@
     </include>
 
     <include file="$(find racecar_navigation)/launch/graph_localization.launch"/>
-    <include file="$(find racecar_navigation)/launch/obstacle_detector.launch"/>
+    <include file="$(find racecar_navigation)/launch/graph_detector.launch"/>
     <include file="$(find racecar_navigation)/launch/graph_planner.launch"/>
     <include file="$(find racecar_navigation)/launch/scan_planner.launch"/>
     <node pkg="racecar_control" type="stage_reconfigure.py" name="stage_reconfigure" output="screen" />

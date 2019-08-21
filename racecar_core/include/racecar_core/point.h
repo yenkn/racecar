@@ -5,7 +5,10 @@
 #ifndef PROJECT_Point2D_H
 #define PROJECT_Point2D_H
 
+#include <ros/ros.h>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
 
 class Point2D
 {
@@ -21,6 +24,21 @@ public:
     pt.x = x;
     pt.y = y;
     pt.z = 0;
+    return pt;
+  }
+
+  inline geometry_msgs::Pose toPose() const {
+    geometry_msgs::Pose pt;
+    pt.position = toPoint();
+    pt.orientation.w = 1.0;
+    return pt;
+  }
+
+   geometry_msgs::PoseStamped toPoseStamped(const std::string &frame_id) const {
+    geometry_msgs::PoseStamped pt;
+    pt.pose = toPose();
+    pt.header.stamp = ros::Time::now();
+    pt.header.frame_id = frame_id;
     return pt;
   }
 

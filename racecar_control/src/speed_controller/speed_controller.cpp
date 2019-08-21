@@ -183,7 +183,7 @@ void SpeedController::cmdVelCallback(const geometry_msgs::TwistConstPtr &twist) 
   }
   setSpeed_ = twist->linear.x;
   setSteering_ =  twist->angular.z / maxSteering_; // steerInterpolator_.interpolate(twist->angular.z);
-  if(setSteering_ < -0.1) setSteering_ *= 1.5;
+  if(setSteering_ < -0.1) setSteering_ *= 1.8;
   // if(setSteering_ < 0.3 && setSteering_ > 0.1) setSteering_ = 0.3;
 }
 

@@ -36,7 +36,7 @@ window
 floorplan
 (
   name "race"
-  bitmap "../maps/testo.pgm"
+  bitmap "../maps/test.pgm"
   size [ 100.000 50.000 2.000 ]
   pose [ 0.100 0.000 0.000 0.000 ]
 )
