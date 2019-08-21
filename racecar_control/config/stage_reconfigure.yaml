@@ -1,6 +1,6 @@
 config:
-  max_speed: &max_speed 2.7
-  stable_speed: &stable_speed 2.5
+  max_speed: &max_speed 2.8
+  stable_speed: &stable_speed 2.8
   low_speed: &low_speed 2.5
 
   hard_cross: &hard_cross 2.4
@@ -14,7 +14,7 @@ pd_controller:
       _exit:
         _distance: 2.0
         desire_velocity: *hard_cross
-        pid_p: 0.8
+        pid_p: 0.7
 
     - stage: 1 # first cross
       # desire_velocity: 2.0
@@ -26,17 +26,18 @@ pd_controller:
     - stage: 3 # [second straight, straight after u-turn, final straight]
       desire_velocity: *max_speed
       error_distance: 1.4
-      _enter:
-        _distance: 2.0
-        error_distance: 1.3
-        desire_velocity: *hard_cross
+      pid_p: 0.6
 
     - stage: 4
+      pid_p: 0.7
       desire_velocity: *stable_speed
       error_distance: 1.4
 
-    - stage: 6 # [enter u, u1, u2]
-      desire_velocity: 2.2
+    - stage: 6 # u-turn in straight
+      desire_velocity: *max_speed
+      _exit:
+        _distance: 2.0
+        desire_velocity: 2.4
 
     - stage: 9
       error_distance: 1.4
@@ -50,25 +51,27 @@ pd_controller:
       error_distance: 1.4
       desire_velocity: *stable_speed
       _exit:
-        _distance: 0.8
+        _distance: 0.7
         error_distance: 1.2
 
     - stage: 11
       error_distance: 1.4
       _enter:
-        _distance: 0.8
+        _distance: 0.7
         error_distance: 1.2
 
     - stage: 12
       error_distance: 1.4
       desire_velocity: *max_speed
+      pid_p: 0.6
       _exit:
         _distance: 2.0
-        desire_velocity: 2.0
+        desire_velocity: 2.2
 
 
     - stage: 13 # second cross
-      error_distance: 1.2
+      error_distance: 1.4
+      pid_p: 0.7
 
 #    - stage: 14
 #      error_distance: 1.2
@@ -76,8 +79,4 @@ pd_controller:
     - stage: 15
       desire_velocity: *max_speed
       error_distance: 1.4
-      _enter:
-        _distance: 1.0
-        error_distance: 1.3
-        desire_velocity: 2.0
 

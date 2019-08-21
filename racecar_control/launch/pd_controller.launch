@@ -13,7 +13,7 @@
         <param name="controller_freq" value="100" />
         <param name="pid_p" value="0.7"/>
         <param name="pid_i" value="0.0"/>
-        <param name="pid_d" value="0.35"/>
+        <param name="pid_d" value="0.4"/>
         <param name="smooth_accel" value="false" />
 
         <param name="goal_radius" value="1.0" />
