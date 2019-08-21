@@ -1,14 +1,14 @@
 config:
-  max_speed: &max_speed 2.6
-  stable_speed: &stable_speed 2.6
-  low_speed: &low_speed 2.6
+  max_speed: &max_speed 2.7
+  stable_speed: &stable_speed 2.5
+  low_speed: &low_speed 2.5
 
   hard_cross: &hard_cross 2.4
 
 pd_controller:
   stages:
     - stage: 0 # [first straight, straight after back-120]
-      desire_velocity: *max_speed
+      desire_velocity: 2.5
       error_distance: 1.4
       pid_p: 0.6
       _exit:
@@ -31,6 +31,10 @@ pd_controller:
         error_distance: 1.3
         desire_velocity: *hard_cross
 
+    - stage: 4
+      desire_velocity: *stable_speed
+      error_distance: 1.4
+
     - stage: 6 # [enter u, u1, u2]
       desire_velocity: 2.2
 
@@ -44,6 +48,7 @@ pd_controller:
 
     - stage: 10
       error_distance: 1.4
+      desire_velocity: *stable_speed
       _exit:
         _distance: 0.8
         error_distance: 1.2
@@ -56,6 +61,7 @@ pd_controller:
 
     - stage: 12
       error_distance: 1.4
+      desire_velocity: *max_speed
       _exit:
         _distance: 2.0
         desire_velocity: 2.0
