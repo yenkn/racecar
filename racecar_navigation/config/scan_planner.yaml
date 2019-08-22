@@ -1,5 +1,5 @@
 planner_type: global
-goal_distance: 2.5
+goal_distance: 3.0
 min_similarity: 0.5
 max_keep: 8
 global_stages: []
