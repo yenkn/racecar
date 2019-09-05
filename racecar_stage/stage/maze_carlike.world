@@ -36,7 +36,7 @@ window
 floorplan
 (
   name "race"
-  bitmap "../maps/test.pgm"
+  bitmap "../../racecar_navigation/maps/north_ob.pgm"
   size [ 100.000 50.000 2.000 ]
   pose [ 0.100 0.000 0.000 0.000 ]
 )
@@ -44,7 +44,7 @@ floorplan
 # throw in a robot
 carlike_robot
 (
-  pose [ 0.500 0.000 0.000 0.000 ]
+  pose [ 0.000 0.000 0.000 0.000 ]
   name "robot"
 )
 

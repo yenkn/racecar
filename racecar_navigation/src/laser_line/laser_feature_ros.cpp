@@ -44,6 +44,7 @@ std::vector<gline> LaserFeatureROS::processScan(const sensor_msgs::LaserScan::Co
   if (!com_bearing_flag) {
     compute_bearing(scan_msg);
     com_bearing_flag = true;
+    frame_id_ = scan_msg->header.frame_id;
   }
 
   std::vector<double> scan_ranges_doubles(scan_msg->ranges.begin(), scan_msg->ranges.end());
@@ -79,11 +80,13 @@ void LaserFeatureROS::publishMarkerMsg(const std::vector<gline> &m_gline, visual
     p_start.x = cit->x1;
     p_start.y = cit->y1;
     p_start.z = 0;
-    marker_msg.points.push_back(p_start);
+    if(p_start.x < -10.0 || p_start.x > 10.0 || std::isnan(p_start.x) || p_start.y < -10.0 || p_start.y > 10.0 || std::isnan(p_start.y)) continue;
     geometry_msgs::Point p_end;
     p_end.x = cit->x2;
     p_end.y = cit->y2;
     p_end.z = 0;
+    if(p_end.x < -10.0 || p_end.x > 10.0 || std::isnan(p_start.y) || p_end.y < -10.0 || p_end.y > 10.0 || std::isnan(p_end.y)) continue;
+    marker_msg.points.push_back(p_start);
     marker_msg.points.push_back(p_end);
   }
   marker_msg.header.frame_id = frame_id_;

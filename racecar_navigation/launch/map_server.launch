@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="reverse" default="false"/>
+
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find racecar_navigation)/maps/north_graph.yaml" output="screen" if="$(arg reverse)">
+        <param name="frame_id" value="/map"/>
+    </node>
+
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find racecar_navigation)/maps/south_graph.yaml" output="screen" unless="$(arg reverse)">
+        <param name="frame_id" value="/map"/>
+    </node>
+
+    <!--<node name="map_server_amcl" pkg="map_server" type="map_server" args="$(find racecar_navigation)/maps/test.yaml" output="screen">-->
+        <!--<param name="frame_id" value="/map"/>-->
+    <!--</node>-->
+
+</launch>

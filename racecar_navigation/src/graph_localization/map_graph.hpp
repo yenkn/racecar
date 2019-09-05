@@ -142,7 +142,7 @@ public:
     });
   }
 
-  std::vector<checkline_t> getChecklines(int &uTurnIndex, double clusterTolerance = 10) {
+  std::vector<checkline_t> getChecklines(int &uTurnIndex, int direction = 1, double clusterTolerance = 10) {
     // find sub graph with maximum points
     using pair_t = decltype(subGraph_)::value_type;
     auto pair = std::max_element(subGraph_.begin(), subGraph_.end(), [](const pair_t &a, const pair_t &b) { return a.second < b.second; });
@@ -161,7 +161,7 @@ public:
     auto prevLastPoint = graphPoints[graphPoints.size()-2];
     auto correctedPoints = graphPoints;
     auto theta = atan2(lastPoint.x - prevLastPoint.x, lastPoint.y - prevLastPoint.y);
-    if(fabs(theta) < 10/180*M_PI) {
+    if(fabs(theta) < 10.0/180*M_PI) {
       for (auto &pt : correctedPoints) {
         auto relate = (pt - lastPoint).rotate(theta);
         pt.x = lastPoint.x + relate.x;
@@ -175,8 +175,8 @@ public:
 
     // cluster points by x
     std::vector<std::vector<LinePoint>> groups({ {} });
-    auto yComparer = [](const LinePoint &a, const LinePoint &b) {
-      return a.y > b.y; // upside down
+    auto yComparer = [direction](const LinePoint &a, const LinePoint &b) {
+      return a.y*direction > b.y*direction; // upside down
     };
     for(int i = start, g = 0; i < graphPoints.size(); i++) {
       if((i > start && correctedPoints[i].x - correctedPoints[i-1].x > clusterTolerance)) {

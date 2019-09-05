@@ -1,7 +1,6 @@
 uturn_margin: 0.4
 sample_times: 50
 path_spacing: 0.1
-default_goal: [0.0, -2.0]
 merge_radius: 0.8
 car_width: 0.5
 lock_side_distance: 3.5

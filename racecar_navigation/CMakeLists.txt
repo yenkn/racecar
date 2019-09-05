@@ -22,6 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(SBPL REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
+  LIBRARIES laser_line
   CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs sensor_msgs nav_msgs racecar_msgs racecar_core costmap_2d
   DEPENDS SBPL
 )
@@ -40,6 +41,7 @@ add_subdirectory(src/graph_localization)
 add_subdirectory(src/graph_planner)
 add_subdirectory(src/graph_detector)
 add_subdirectory(src/scan_planner)
+add_subdirectory(src/hound_dog)
 
 roslaunch_add_file_check(launch)
 

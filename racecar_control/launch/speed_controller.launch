@@ -28,6 +28,6 @@
     <param name="step_value" value="0.4" />
     <param name="step_interval" value="5" />
 
-    <param name="openLoop" value="false" />
+    <param name="openLoop" value="true" />
   </node>
 </launch>

@@ -16,7 +16,7 @@
         <param name="serialHardwareFlow" value="false" />
         <param name="serialSoftwareFlow" value="false" />
 
-        <param name="steerMiddle" value="1500.0" />
+        <param name="steerMiddle" value="1540.0" />
 
         <param name="encoderFactor" value="-0.004316939315"/> <!--2.95/100*M_PI/(512*0.005) -->
     </node>

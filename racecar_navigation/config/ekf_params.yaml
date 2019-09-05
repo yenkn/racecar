@@ -35,9 +35,9 @@ odom0: /rf2o_laser_odometry/odom
 # do not provide some of the state variables estimated by the filter. For example, a TwistWithCovarianceStamped message
 # has no pose information, so the first six values would be meaningless in that case. Each vector defaults to all false
 # if unspecified, effectively making this parameter required for each sensor.
-odom0_config: [false, false, false,
+odom0_config: [true, true, false,
                false, false, false,
-               true, true, false,
+               false, false, false,
                false, false, false,
                false, false, false]
 

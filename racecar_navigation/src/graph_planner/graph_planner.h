@@ -53,6 +53,7 @@ private:
   std::string splineFile_;
   double uTurnMargin_, pathSpacing_, mergeRadius_, carWidth_, lockSideDistance_;
   int sampleTimes_, changeSideSurvive_;
+  bool upsideDown_;
   std::set<int> obstacleStages_;
 
   std::map<int, std::vector<int>> obstacleSides_;

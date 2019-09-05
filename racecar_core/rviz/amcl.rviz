@@ -6,11 +6,10 @@ Panels:
       Expanded:
         - /Global Options1
         - /TF1/Frames1
-        - /Path1
         - /Imu1/Box properties1
         - /Obstacles1
         - /Obstacles1/MarkerArray1
-        - /Path2
+        - /Path1
       Splitter Ratio: 0.5
     Tree Height: 244
   - Class: rviz/Selection
@@ -67,12 +66,12 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: false
+      Enabled: true
       Name: local_map
       Topic: /scan_planner/local_costmap/costmap
       Unreliable: false
       Use Timestamp: false
-      Value: false
+      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: false
       Autocompute Value Bounds:
@@ -162,29 +161,6 @@ Visualization Manager:
                     right_battery:
                       {}
       Update Interval: 0
-      Value: true
-    - Alpha: 1
-      Buffer Length: 10
-      Class: rviz/Path
-      Color: 0; 0; 255
-      Enabled: true
-      Head Diameter: 0.300000012
-      Head Length: 0.200000003
-      Length: 0.300000012
-      Line Style: Lines
-      Line Width: 0.0299999993
-      Name: Path
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Radius: 0.0299999993
-      Shaft Diameter: 0.100000001
-      Shaft Length: 0.100000001
-      Topic: /graph_planner/plan
-      Unreliable: true
       Value: true
     - Angle Tolerance: 0.100000001
       Class: rviz/Odometry
@@ -344,7 +320,7 @@ Visualization Manager:
       Marker Topic: /pd_controller/path_marker
       Name: pursuit_circle
       Namespaces:
-        Markers: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Group
@@ -361,7 +337,7 @@ Visualization Manager:
           Marker Topic: /graph_detector/makers
           Name: MarkerArray
           Namespaces:
-            Markers: true
+            {}
           Queue Size: 1
           Value: true
       Enabled: true
@@ -503,10 +479,33 @@ Visualization Manager:
           Marker Topic: /graph_localization/marker
           Name: Marker
           Namespaces:
-            graph: true
+            {}
           Queue Size: 100
           Value: true
-      Enabled: true
+        - Alpha: 1
+          Buffer Length: 1
+          Class: rviz/Path
+          Color: 0; 0; 255
+          Enabled: true
+          Head Diameter: 0.300000012
+          Head Length: 0.200000003
+          Length: 0.300000012
+          Line Style: Lines
+          Line Width: 0.0299999993
+          Name: Path
+          Offset:
+            X: 0
+            Y: 0
+            Z: 0
+          Pose Color: 255; 85; 255
+          Pose Style: None
+          Radius: 0.0299999993
+          Shaft Diameter: 0.100000001
+          Shaft Length: 0.100000001
+          Topic: /graph_planner/plan
+          Unreliable: true
+          Value: true
+      Enabled: false
       Name: Graph
     - Alpha: 1
       Class: rviz/PointStamped

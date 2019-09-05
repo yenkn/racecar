@@ -94,7 +94,7 @@ private:
 
   double forwardDistance_, backwardDistance_;
 
-  bool publishPlanMap_, firstPoint_;
+  bool publishPlanMap_, firstPoint_, upsideDown_;
   double uTurnRadius_;
   int checklineXTolerance_;
 
@@ -153,10 +153,11 @@ GraphLocalizationNode::GraphLocalizationNode() : nh_("~"), laserFeature_("laser_
   nh_.param("checkline_x_tolerance", checklineXTolerance_, 15);
 
   nh_.param("first_point", firstPoint_, true);
+  nh_.param("upside_down", upsideDown_, false);
 
   std::vector<double> goal;
   nh_.param("default_goal", goal, {});
-  goal_ = goal.size() < 2 ? Point2D(0.0, -2.0) : Point2D(goal[0], goal[1]);
+  goal_ = goal.size() < 2 ? Point2D(0.0, (upsideDown_ ? 1: -1) * 2.0) : Point2D(goal[0], goal[1]);
 
   estimatePose_ = utils::createTfFromXYTheta(0, 0, 0);
 
@@ -324,7 +325,7 @@ void GraphLocalizationNode::mapCallback(const nav_msgs::OccupancyGridConstPtr &m
 
   mapGraph_.initial_ = Point2D(-map_.info.origin.position.x / map_.info.resolution, -map_.info.origin.position.y / map_.info.resolution);
   mapGraph_.build(afterLines);
-  checklines_ = mapGraph_.getChecklines(uTurnIndex_, checklineXTolerance_);
+  checklines_ = mapGraph_.getChecklines(uTurnIndex_, upsideDown_ ? -1 : 1, checklineXTolerance_);
 
   std::vector<utils::checkline_t> lines;
   for(auto &line : checklines_) {

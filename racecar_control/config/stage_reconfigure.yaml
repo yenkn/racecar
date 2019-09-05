@@ -1,82 +1,78 @@
 config:
-  max_speed: &max_speed 3.6
-  stable_speed: &stable_speed 3.0
-  low_speed: &low_speed 2.5
-
-  hard_cross: &hard_cross 2.4
+  start_speed: &start_speed 2.5
+  first_cross: &first_cross 2.2
+  first_straight: &first_straight 2.5
+  first_curve: &first_curve 2.4
+  # ------------
+  uturn_speed: &uturn_speed 2.2
+  # ------------
+#  --- north ---
+#  second_curve: &second_curve 3.6
+#  second_straight: &second_straight 3.6
+#  second_cross: &second_cross 3.0
+#  --- south ---
+  second_curve: &second_curve 3.0
+  second_straight: &second_straight 3.6
+  second_cross: &second_cross 3.6
+  final_speed: &final_speed 4.0
 
 pd_controller:
   stages:
-    - stage: 0 # [first straight, straight after back-120]
-      desire_velocity: 2.5
+    - stage: 0 # first straight
+      desire_velocity: *start_speed
       error_distance: 1.4
-      pid_p: 0.6
+      pid_p: 0.8
+      pid_d: 0.3
       _exit:
         _distance: 2.0
-        desire_velocity: *hard_cross
-        pid_p: 0.61
+        desire_velocity: *first_cross
+        pid_p: 0.8
 
     - stage: 1 # first cross
-      # desire_velocity: 2.0
+      desire_velocity: *first_cross
       error_distance: 1.2
 
-#    - stage: 2
-#      error_distance: 1.2
-
-    - stage: 3 # [second straight, straight after u-turn, final straight]
-      desire_velocity: *max_speed
+    - stage: 3 # second straight
+      desire_velocity: *first_straight
       error_distance: 1.4
-      pid_p: 0.6
+      pid_d: 0.4
 
-    - stage: 4
-      pid_p: 0.61
-      desire_velocity: *stable_speed
+    - stage: 4 # 120 in
+      desire_velocity: *first_curve
       error_distance: 1.4
 
     - stage: 6 # u-turn in straight
-      desire_velocity: *max_speed
+      desire_velocity: *first_straight
+      _exit:
+        _distance: 1.0
+        desire_velocity: *uturn_speed
+
+# ============================================================
+
+    - stage: 9 # u-turn out straight
+      error_distance: 1.4
+      desire_velocity: *second_curve
+
+    - stage: 10 # 120 in
+      error_distance: 1.4
+      desire_velocity: *second_curve
+
+    - stage: 12 # 120 out straight
+      error_distance: 1.4
+      desire_velocity: *second_straight
       _exit:
         _distance: 2.0
-        desire_velocity: 2.4
+        desire_velocity: *second_cross
 
-    - stage: 9
-      error_distance: 1.4
-      desire_velocity: *max_speed
+    - stage: 13 # 90 in
+      desire_velocity: *second_cross
+      error_distance: 1.2
+
+    - stage: 15 # final straight
 #      _enter:
 #        _distance: 2.0
-#        error_distance: 0.5
-#        desire_velocity: *max_speed
-
-    - stage: 10
-      error_distance: 1.4
-      desire_velocity: *stable_speed
-      _exit:
-        _distance: 0.61
-        error_distance: 1.2
-
-    - stage: 11
-      error_distance: 1.4
-      _enter:
-        _distance: 0.61
-        error_distance: 1.2
-
-    - stage: 12
-      error_distance: 1.4
-      desire_velocity: *max_speed
-      pid_p: 0.6
-      _exit:
-        _distance: 2.0
-        desire_velocity: 2.2
-
-
-    - stage: 13 # second cross
-      error_distance: 1.4
-      pid_p: 0.61
-
-#    - stage: 14
-#      error_distance: 1.2
-
-    - stage: 15
-      desire_velocity: *max_speed
+#        error_distance: 1.3
+#        desire_velocity: *second_cross
+      desire_velocity: *final_speed
       error_distance: 1.4
 

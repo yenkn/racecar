@@ -15,7 +15,7 @@
     <!-- Chassis Core -->
     <include file="$(find racecar_core)/launch/chassis.launch" />
 
-    <include file="$(find racecar_core)/launch/guardian.launch" />
+    <!--<include file="$(find racecar_core)/launch/guardian.launch" />-->
 
     <node pkg="racecar_core" name="laser_calibration" type="laser_calibration" output="screen" />
 

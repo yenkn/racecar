@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
+    <arg name="reverse" default="false"/>
     <node pkg="racecar_navigation" type="graph_localization" respawn="false" name="graph_localization" output="screen">
         <rosparam file="$(find racecar_navigation)/config/graph_localization.yaml" command="load" />
+        <param name="upside_down" value="true" if="$(arg reverse)" />
     </node>
 </launch>

@@ -2,12 +2,13 @@
 <launch>
     <arg name="use_rviz" default="$(optenv RACECAR_CLIENT false)" />
     <arg name="is_stage" default="false" />
+    <arg name="reverse" default="false" />
+
+    <include file="$(find racecar_navigation)/launch/map_server.launch">
+        <arg name="reverse" value="$(arg reverse)"/>
+    </include>
 
     <group unless="$(arg is_stage)">
-        <!-- Run the map server -->
-        <arg name="map_file" default="$(find racecar_navigation)/maps/test.yaml"/>
-        <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
-
         <include file="$(find racecar_control)/launch/speed_controller.launch" />
     </group>
 
@@ -17,9 +18,13 @@
         <arg name="is_stage" value="$(arg is_stage)" />
     </include>
 
-    <include file="$(find racecar_navigation)/launch/graph_localization.launch"/>
+    <include file="$(find racecar_navigation)/launch/graph_localization.launch">
+        <arg name="reverse" value="$(arg reverse)" />
+    </include>
     <include file="$(find racecar_navigation)/launch/graph_detector.launch"/>
-    <include file="$(find racecar_navigation)/launch/graph_planner.launch"/>
+    <include file="$(find racecar_navigation)/launch/graph_planner.launch">
+        <arg name="reverse" value="$(arg reverse)" />
+    </include>
     <include file="$(find racecar_navigation)/launch/scan_planner.launch"/>
     <node pkg="racecar_control" type="stage_reconfigure.py" name="stage_reconfigure" output="screen" />
 

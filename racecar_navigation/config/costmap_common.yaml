@@ -22,5 +22,5 @@ obstacles_laser:
     laser: {data_type: LaserScan, clearing: true, marking: true, topic: /scan, inf_is_valid: true}
 
 inflation:
-    inflation_radius: 0.80 # bigger at large field
-    cost_scaling_factor: 10.0
+    inflation_radius: 0.60 # bigger at large field
+    cost_scaling_factor: 6.0

@@ -56,6 +56,7 @@
   <depend>geometry_msgs</depend>
   <depend>racecar_msgs</depend>
   <depend>racecar_core</depend>
+  <depend>racecar_navigation</depend>
   <depend>dynamic_reconfigure</depend>
 
   <!-- The export tag contains other, unspecified, tags -->

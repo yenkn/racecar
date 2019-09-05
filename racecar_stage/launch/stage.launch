@@ -9,11 +9,6 @@
         <remap from="base_scan" to="/scan"/>
     </node>
 
-    <!--  ************** Map Server **************  -->
-    <node name="map_server" pkg="map_server" type="map_server" args="$(find racecar_stage)/maps/test.yaml" output="screen">
-        <param name="frame_id" value="/map"/>
-    </node>
-
     <node pkg="racecar_stage" type="fake_imu.py" name="fake_imu" output="screen"/>
 
 </launch>

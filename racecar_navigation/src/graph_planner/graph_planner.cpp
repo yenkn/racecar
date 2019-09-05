@@ -29,13 +29,15 @@ GraphPlanner::GraphPlanner(): nh_("~") {
   nh_.param("lock_side_distance", lockSideDistance_, 1.0);
   nh_.param("change_side_survive", changeSideSurvive_, 5);
 
+  nh_.param("upside_down", upsideDown_, false);
+
   std::vector<int> obstacleStages;
   nh_.param("obstacle_stages", obstacleStages, {});
   obstacleStages_ = std::set<int>(obstacleStages.begin(), obstacleStages.end());
 
   std::vector<double> goal;
   nh_.param("default_goal", goal, {});
-  goal_ = goal.size() < 2 ? Point2D(0.0, -2.0) : Point2D(goal[0], goal[1]);
+  goal_ = goal.size() < 2 ? Point2D(0.0, upsideDown_ ? 2.0 : -2.0) : Point2D(goal[0], goal[1]);
 
   markerCb_ = std::bind(&GraphPlanner::markerCallback, this, std::placeholders::_1);
   server_ = new interactive_markers::InteractiveMarkerServer("control", "", false);
